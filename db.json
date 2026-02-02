@@ -63,7 +63,7 @@
       "id": "2",
       "text": "another comment about post 1",
       "postId": "1",
-      "isDeleted": true
+      "isDeleted": false
     },
     {
       "id": "3",

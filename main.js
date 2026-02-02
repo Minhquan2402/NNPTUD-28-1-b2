@@ -6,21 +6,22 @@ async function LoadComments() {
         let body = document.getElementById("comments-body");
         body.innerHTML = "";
         for (const cmt of comments) {
-            if (cmt.isDeleted) {
-                body.innerHTML += `<tr>
-                    <td><s>${cmt.id}</s></td>
-                    <td><s>${cmt.text}</s></td>
-                    <td><s>${cmt.postId}</s></td>
-                    <td><input type='submit' value='delete' onclick='DeleteComment(${cmt.id})' disabled/></td>
-                </tr>`;
-            } else {
-                body.innerHTML += `<tr>
-                    <td>${cmt.id}</td>
-                    <td>${cmt.text}</td>
-                    <td>${cmt.postId}</td>
-                    <td><input type='submit' value='delete' onclick='DeleteComment(${cmt.id})'/></td>
-                </tr>`;
-            }
+                if (cmt.isDeleted) {
+                    body.innerHTML += `<tr>
+                        <td><s>${cmt.id}</s></td>
+                        <td><s>${cmt.text}</s></td>
+                        <td><s>${cmt.postId}</s></td>
+                        <td><input type='submit' value='delete' onclick='DeleteComment(${cmt.id})' disabled/>
+                            <input type='submit' value='restore' onclick='RestoreComment(${cmt.id})'/></td>
+                    </tr>`;
+                } else {
+                    body.innerHTML += `<tr>
+                        <td>${cmt.id}</td>
+                        <td>${cmt.text}</td>
+                        <td>${cmt.postId}</td>
+                        <td><input type='submit' value='delete' onclick='DeleteComment(${cmt.id})'/></td>
+                    </tr>`;
+                }
         }
     } catch (error) {
         console.log(error);
@@ -81,6 +82,20 @@ async function DeleteComment(id) {
     LoadComments();
 }
 
+async function RestoreComment(id) {
+    let res = await fetch('http://localhost:3000/comments/' + id, {
+        method: 'PATCH',
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ isDeleted: false })
+    });
+    if (res.ok) {
+        console.log("khoi phuc comment thanh cong");
+    }
+    LoadComments();
+}
+
 // Gọi LoadComments khi cần
 //HTTP request get,get/id,post,put/id, delete/id
 async function LoadData() {
@@ -95,7 +110,8 @@ async function LoadData() {
                     <td><s>${post.id}</s></td>
                     <td><s>${post.title}</s></td>
                     <td><s>${post.views}</s></td>
-                    <td><input type='submit' value='delete' onclick='Delete(${post.id})' disabled/></td>
+                    <td><input type='submit' value='delete' onclick='Delete(${post.id})' disabled/>
+                        <input type='submit' value='restore' onclick='Restore(${post.id})'/></td>
                 </tr>`
             } else {
                 body.innerHTML += `<tr>
@@ -162,6 +178,20 @@ async function Delete(id) {
     });
     if (res.ok) {
         console.log("xoa mem thanh cong");
+    }
+    LoadData();
+}
+
+async function Restore(id) {
+    let res = await fetch('http://localhost:3000/posts/' + id, {
+        method: 'PATCH',
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ isDeleted: false })
+    });
+    if (res.ok) {
+        console.log("khoi phuc post thanh cong");
     }
     LoadData();
 }
